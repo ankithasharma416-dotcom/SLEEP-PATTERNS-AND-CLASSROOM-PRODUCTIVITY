@@ -13,7 +13,7 @@ College mini-project at NMAMIT, Nitte. The project explores self-reported sleep 
 
 [`dataset.csv`](dataset.csv) contains 117 survey responses and 16 columns. Each row is a student response. The target is the survey's classroom productivity rating, scored 1–5. The model uses nine sleep, bedtime, routine, sleepiness, screen-time, caffeine, and study-time features; see [`src/predict.py`](src/predict.py) for the exact column names.
 
-The notebook's uploaded source was recorded as 117 rows × 17 columns and included a `Timestamp` field. The checked-in `dataset.csv` has 16 columns and omits `Timestamp`. The 117 response rows' distribution counts and sleep-duration/productivity cross-tab match the notebook outputs. `Timestamp` is not used as a model feature. The dataset has no missing or duplicate rows according to the notebook's checks. The CSV is preserved as provided.
+The notebook's uploaded source was recorded as 117 rows × 17 columns and included a `Timestamp` field. The checked-in `dataset.csv` has 16 columns and omits `Timestamp`. The 117 response rows' distribution counts and sleep-duration/productivity cross-tab match the notebook outputs. `Timestamp` is not used as a model feature. The notebook loads its upload with `keep_default_na=False`, so empty survey answers remain empty strings and its null check does not count them. In the caffeine column, 47 such empty-string responses are displayed by pandas as `None` in the notebook's frequency table. They are retained as recorded; no imputation or edits to the original responses are applied. The notebook's “no missing values” statement should therefore be read as “no null values,” not as evidence that no response fields are blank.
 
 ## Exploratory data analysis
 
@@ -62,7 +62,7 @@ Use Python 3.10 or newer, then install the dependencies:
 python -m pip install -r requirements.txt
 ```
 
-Open `data_science_project_final.ipynb` in Jupyter Notebook or Google Colab to review the complete analysis. In Colab, upload `dataset.csv` when prompted. The notebook's recorded upload included an extra `Timestamp` column, but that field is not used in the analysis or model.
+Open `data_science_project_final.ipynb` in Jupyter Notebook or Google Colab to review the complete analysis. In Colab, upload the survey CSV when prompted. The notebook's recorded upload included an extra `Timestamp` column, but that field is not used in the analysis or model. Its saved outputs document the original run; rerunning it requires the same source survey export for identical column names and results.
 
 To make one prediction with the checked-in model, run from the repository root and supply values using the survey's category labels. Example:
 
