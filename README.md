@@ -1,276 +1,85 @@
-Sleep Patterns and Classroom Productivity Among Engineering Students
+# Sleep Patterns and Classroom Productivity Among Engineering Students
 
+College mini-project at NMAMIT, Nitte. The project explores self-reported sleep habits and classroom productivity among engineering students and evaluates whether selected survey responses can predict a student's productivity rating.
 
+## Objectives
 
-Machine Learning Project
+- Summarize reported sleep duration, sleep quality, daytime sleepiness, and classroom productivity.
+- Explore the relationship between sleep duration and productivity ratings.
+- Compare classification approaches for predicting the self-reported productivity rating.
+- Preserve the final trained model and its evaluation outputs for review and reuse.
 
-College: NMAMIT, Nitte
+## Dataset
 
+[`dataset.csv`](dataset.csv) contains 117 survey responses and 16 columns. Each row is a student response. The target is the survey's classroom productivity rating, scored 1–5. The model uses nine sleep, bedtime, routine, sleepiness, screen-time, caffeine, and study-time features; see [`src/predict.py`](src/predict.py) for the exact column names.
 
+The notebook's uploaded source was recorded as 117 rows × 17 columns and included a `Timestamp` field. The checked-in `dataset.csv` has 16 columns and omits `Timestamp`. The 117 response rows' distribution counts and sleep-duration/productivity cross-tab match the notebook outputs. `Timestamp` is not used as a model feature. The dataset has no missing or duplicate rows according to the notebook's checks. The CSV is preserved as provided.
 
-1\. Project Overview
+## Exploratory data analysis
 
+The notebook is the detailed record of loading, data checks, descriptive summaries, category distributions, and the sleep-duration/productivity cross-tab. The notebook outputs report 42 students (35.90%) in the 6–7 hour sleep category; the most common sleep-quality rating is 3 (51 responses); “Sometimes” is the most common lecture sleepiness response (44); and productivity rating 3 is the most common target value (55). These are descriptive summaries, not evidence of causation.
 
+Saved charts are in [`plots/`](plots/). They were generated from the matching notebook counts and crosstab. The model charts use the cross-validation results recorded in the notebook.
 
-This project studies the relationship between sleep patterns and classroom productivity among engineering students using data analysis and machine learning.
+## Machine-learning workflow
 
+The notebook splits the data with `train_test_split(test_size=0.25, random_state=42, stratify=y)`, giving 87 training and 30 test rows. Categorical features are one-hot encoded with unknown categories ignored; the two numeric rating features pass through unchanged. Models are compared using a shuffled 4-fold `StratifiedKFold` with `random_state=42` on the training partition. KNN neighborhood sizes are compared using cross-validated macro F1. The selected KNN pipeline is then fit on the training partition and evaluated once on the held-out test partition.
 
+Models compared in the final notebook comparison: Dummy Classifier, Decision Tree, Random Forest, Logistic Regression, SVM, and KNN (K=3). The notebook also contains earlier exploratory model runs; the CSV records the final comparison table from notebook cell 46.
 
-The project uses survey responses to train a machine learning model that predicts students' self-reported classroom productivity ratings based on selected sleep-related and study-related factors.
+## Final model and performance
 
+The saved model is [`models/final_classroom_productivity_model.pkl`](models/final_classroom_productivity_model.pkl): a scikit-learn pipeline with one-hot categorical encoding, passthrough numeric values, and `KNeighborsClassifier(n_neighbors=3)`. K=3 had the best macro F1 (0.431) among the six tested K values in the notebook's unscaled KNN parameter comparison. The notebook separately explored a scaled KNN variant; it was not used for the final model.
 
+Held-out test results from the notebook:
 
-2\. Project Objectives
+| Metric | Score |
+|---|---:|
+| Accuracy | 56.67% (17/30) |
+| Macro F1 | 0.28 |
+| Weighted F1 | 0.51 |
 
+The full classification report and 5×5 confusion matrix are in [`results/final_evaluation.txt`](results/final_evaluation.txt). Model comparison and KNN parameter values are in [`results/model_comparison.csv`](results/model_comparison.csv) and [`results/knn_parameter_comparison.csv`](results/knn_parameter_comparison.csv). Performance is preliminary: the dataset is small, self-reported, and the target classes are imbalanced; the model does not establish cause and effect.
 
+## Repository structure
 
-\- Study sleep patterns among engineering students.
+```text
+dataset.csv
+data_science_project_final.ipynb       # primary detailed workflow and recorded outputs
+models/final_classroom_productivity_model.pkl
+plots/                                  # eight labeled SVG charts
+results/                                # CV tables and final evaluation
+src/predict.py                          # prediction helper and CLI
+README.md
+requirements.txt
+```
 
-\- Analyze the relationship between sleep habits and classroom productivity.
+## Setup and use
 
-\- Identify factors associated with students' classroom productivity.
+Use Python 3.10 or newer, then install the dependencies:
 
-\- Apply machine learning classification algorithms to predict productivity ratings.
+```bash
+python -m pip install -r requirements.txt
+```
 
-\- Compare multiple classification models and select a suitable final model.
+Open `data_science_project_final.ipynb` in Jupyter Notebook or Google Colab to review the complete analysis. In Colab, upload `dataset.csv` when prompted. The notebook's recorded upload included an extra `Timestamp` column, but that field is not used in the analysis or model.
 
+To make one prediction with the checked-in model, run from the repository root and supply values using the survey's category labels. Example:
 
+```bash
+python src/predict.py --sleep-duration "6-7" --bedtime "10-11 PM" --schedule-consistency 4 --late-study-frequency Sometimes --sleep-quality 3 --lecture-sleepiness Sometimes --screen-time "30-60 minutes" --caffeine 1 --study-hours "1-2 hours"
+```
 
-3\. Technologies Used
+The command prints an integer productivity rating from 1 to 5. Predictions are exploratory and should not be used as definitive assessments of students.
 
+## Team
 
+| Name | USN |
+|---|---|
+| Ananya Shetty | NN25ISE028 |
+| Ankitha Sharma | NN25ISE032 |
+| Aadi D Rai | NN25ISE002 |
 
-\- Python
+**Project guide:** Dr. Vandana B S, NMAMIT, Nitte
 
-\- Google Colab
-
-\- Pandas
-
-\- NumPy
-
-\- Matplotlib
-
-\- Seaborn
-
-\- Scikit-learn
-
-\- Joblib
-
-
-
-4\. Machine Learning Methodology
-
-
-
-The project follows these steps:
-
-
-
-1\. Survey dataset collection.
-
-2\. Data loading and preprocessing.
-
-3\. Feature selection.
-
-4\. Splitting the dataset into training and testing sets.
-
-5\. Training and comparison of multiple classification algorithms.
-
-6\. Model evaluation using Accuracy, Macro F1-score, Weighted F1-score and confusion matrices.
-
-7\. Final model selection, training and saving.
-
-
-
-Final Model
-
-
-
-The selected final model is K-Nearest Neighbors (KNN) with:
-
-
-
-\- Algorithm: K-Nearest Neighbors
-
-\- Number of Neighbors (K): 3
-
-
-
-KNN was selected based on cross-validation Macro F1-score.
-
-
-
-5\. Model Evaluation
-
-
-
-The final model achieved the following test results:
-
-
-
-Evaluation Metric| Score
-
-Accuracy| 56.67%
-
-Macro F1-score| 0.28
-
-Weighted F1-score| 0.51
-
-
-
-Results Interpretation
-
-
-
-The model achieved a test accuracy of 56.67%.
-
-
-
-The dataset is relatively small and the target classes are imbalanced. Therefore, the evaluation results are preliminary, and predictions should be interpreted cautiously.
-
-
-
-6\. Project Structure
-
-
-
-Sleep-Patterns-and-Classroom-Productivity/
-
-│
-
-├── dataset.csv
-
-├── data\_science\_project\_final.ipynb
-
-├── final\_classroom\_productivity\_model.pkl
-
-├── README.md
-
-├── requirements.txt
-
-├── .gitignore
-
-│
-
-├── plots/
-
-├── src/
-
-└── results/
-
-
-
-7\. Project Files
-
-
-
-File| Description
-
-dataset.csv| Survey dataset containing student responses
-
-data\_science\_project\_final.ipynb| Notebook containing preprocessing, model training and evaluation
-
-final\_classroom\_productivity\_model.pkl| Saved final trained KNN model pipeline
-
-requirements.txt| Required Python libraries
-
-plots/| Directory for project visualizations
-
-src/| Directory for source code
-
-results/| Directory for model evaluation results
-
-
-
-8\. Installation and Setup
-
-
-
-Clone the repository:
-
-
-
-git clone YOUR\_GITHUB\_REPOSITORY\_URL
-
-
-
-Navigate to the project directory:
-
-
-
-cd SLEEP-PATTERNS-AND-CLASSROOM-PRODUCTIVITY
-
-
-
-Install the required dependencies:
-
-
-
-pip install -r requirements.txt
-
-
-
-9\. How to Run
-
-
-
-1\. Open Google Colab or Jupyter Notebook.
-
-2\. Open "data\_science\_project\_final.ipynb".
-
-3\. Load the survey dataset.
-
-4\. Execute the notebook cells sequentially.
-
-5\. Explore the data analysis, model training and evaluation results.
-
-
-
-10\. Limitations
-
-
-
-\- The dataset is based on self-reported survey responses.
-
-\- The number of responses is limited.
-
-\- The target classes are imbalanced.
-
-\- The model identifies patterns and does not establish cause-and-effect relationships.
-
-\- Predictions are not intended to be treated as definitive assessments of student productivity.
-
-
-
-11\. Team Members
-
-
-
-Name| USN
-
-Ananya Shetty| NN25ISE028
-
-Ankitha Sharma| NN25ISE032
-
-Aadi D Rai| NN25ISE002
-
-
-
-12\. Project Guide
-
-
-
-Dr. Vandana B S
-
-NMAMIT, Nitte
-
-
-
-\---
-
-
-
-Project Domain: Machine Learning
-
-Project Title: Sleep Patterns and Classroom Productivity Among Engineering Students
-
+**Domain:** Machine Learning

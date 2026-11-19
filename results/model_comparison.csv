@@ -1,0 +1,7 @@
+Model,CV accuracy (%),CV macro F1,CV weighted F1
+Dummy Classifier,47.13,0.128,0.302
+Decision Tree,31.11,0.216,0.287
+Random Forest,54.11,0.365,0.505
+Logistic Regression,46.10,0.370,0.459
+SVM,40.42,0.380,0.404
+KNN (K=3),50.43,0.431,0.498
